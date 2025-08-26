@@ -16,13 +16,13 @@ export default function LoginScreen() {
   const handleLoginAluno = async () => {
     const alunos = JSON.parse(await AsyncStorage.getItem("alunos")) || [];
     const aluno = alunos.find(a => a.matricula === matricula);
-
+  
     if (!aluno) return Alert.alert("Erro", "Matrícula inválida");
-
+  
     await AsyncStorage.setItem("user", JSON.stringify({ tipo: "aluno", ...aluno }));
-    navigation.navigate("Location");
+    navigation.navigate("BreakScreen");
   };
-
+  
   const handleLoginAdmin = async () => {
     const admin = { usuario: "admin", senha: "1234" };
     if (matricula === admin.usuario && senha === admin.senha) {

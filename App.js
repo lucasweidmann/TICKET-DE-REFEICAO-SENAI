@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/LoginScreen";
 import ADMScreen from "./screens/ADMScreen";
+import BreakScreen from "./screens/BreakScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,11 @@ export default function App() {
         <Stack.Screen 
           name="ADM" 
           component={ADMScreen} 
+          options={{ headerShown: false }}
+        />
+                <Stack.Screen 
+          name="BreakScreen" 
+          component={BreakScreen} 
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
