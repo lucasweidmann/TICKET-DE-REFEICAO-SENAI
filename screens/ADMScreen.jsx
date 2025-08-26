@@ -4,38 +4,37 @@
 // (Opcional) Histórico de uso dos tickets (por data).
 // Botão para "resetar" os tickets no fim do dia.
 
-
-//vou comecar a trabalhar de verdade agora, me deseje sorte
+// bora trabalhar agora, me deseje sorte
 import React, { useState } from "react";
 
 const ADMScreen = () => {
-  const [students, setStudents] = useState([]);
-  const [name, setName] = useState("");
-  const [registration, setRegistration] = useState("");
-  const [ticketHistory, setTicketHistory] = useState([]);
-  const [ticketsToday, setTicketsToday] = useState([]);
+  const [alunos, setAlunos] = useState([]);
+  const [nome, setNome] = useState("");
+  const [matricula, setMatricula] = useState("");
+  const [historicoTickets, setHistoricoTickets] = useState([]);
+  const [ticketsHoje, setTicketsHoje] = useState([]);
 
-  const handleRegisterStudent = () => {
-    if (name && registration) {
-      const newStudent = { name, registration };
-      setStudents([...students, newStudent]);
-      setName("");
-      setRegistration("");
+  const cadastrarAluno = () => {
+    if (nome && matricula) {
+      const novoAluno = { nome, matricula };
+      setAlunos([...alunos, novoAluno]);
+      setNome("");
+      setMatricula("");
     }
   };
 
-  const handleGiveTicket = (student) => {
-    if (!ticketsToday.find((s) => s.registration === student.registration)) {
-      setTicketsToday([...ticketsToday, student]);
+  const darTicket = (aluno) => {
+    if (!ticketsHoje.find((a) => a.matricula === aluno.matricula)) {
+      setTicketsHoje([...ticketsHoje, aluno]);
     }
   };
 
   const handleResetTickets = () => {
-    setTicketHistory([
-      ...ticketHistory,
-      { date: new Date().toLocaleDateString(), tickets: ticketsToday },
+    setHistoricoTickets([
+      ...historicoTickets,
+      { date: new Date().toLocaleDateString(), tickets: ticketsHoje },
     ]);
-    setTicketsToday([]);
+    setTicketsHoje([]);
   };
 
   return (
@@ -48,26 +47,26 @@ const ADMScreen = () => {
         <input
           type="text"
           placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
         />
         <input
           type="text"
           placeholder="Registration"
-          value={registration}
-          onChange={(e) => setRegistration(e.target.value)}
+          value={matricula}
+          onChange={(e) => setMatricula(e.target.value)}
         />
-        <button onClick={handleRegisterStudent}>Register</button>
+        <button onClick={cadastrarAluno}>Register</button>
       </div>
 
       {/* Students List */}
       <div>
         <h2>Students</h2>
         <ul>
-          {students.map((student, index) => (
+          {alunos.map((aluno, index) => (
             <li key={index}>
-              {student.name} ({student.registration})
-              <button onClick={() => handleGiveTicket(student)}>
+              {aluno.nome} ({aluno.matricula})
+              <button onClick={() => darTicket(aluno)}>
                 Give Ticket
               </button>
             </li>
@@ -79,9 +78,9 @@ const ADMScreen = () => {
       <div>
         <h2>Tickets Today</h2>
         <ul>
-          {ticketsToday.map((student, index) => (
+          {ticketsHoje.map((aluno, index) => (
             <li key={index}>
-              {student.name} ({student.registration})
+              {aluno.nome} ({aluno.matricula})
             </li>
           ))}
         </ul>
@@ -91,9 +90,9 @@ const ADMScreen = () => {
       <div>
         <h2>Ticket History</h2>
         <ul>
-          {ticketHistory.map((entry, index) => (
+          {historicoTickets.map((entry, index) => (
             <li key={index}>
-              {entry.date}: {entry.tickets.map((s) => s.name).join(", ")}
+              {entry.date}: {entry.tickets.map((a) => a.nome).join(", ")}
             </li>
           ))}
         </ul>
