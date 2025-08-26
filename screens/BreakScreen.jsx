@@ -5,14 +5,24 @@ const BreakScreen = () => {
   const [isBreakActive, setIsBreakActive] = useState(false);
   const [remainingTime, setRemainingTime] = useState("");
 
+<<<<<<< HEAD
   const breakStartTime = new Date();
   breakStartTime.setHours(15, 0, 0);
   const breakEndTime = new Date();
   breakEndTime.setHours(15, 15, 0);
 
+=======
+>>>>>>> refs/remotes/origin/main
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
+  
+      const breakStartTime = new Date();
+      breakStartTime.setHours(16, 26, 0);
+  
+      const breakEndTime = new Date();
+      breakEndTime.setHours(16, 28, 0);
+  
       if (now >= breakStartTime && now <= breakEndTime) {
         setIsBreakActive(true);
         const timeLeft = Math.floor((breakEndTime - now) / 1000);
@@ -27,9 +37,10 @@ const BreakScreen = () => {
         );
       }
     }, 1000);
-
+  
     return () => clearInterval(interval);
   }, []);
+  
 
   return (
     <View style={styles.container}>

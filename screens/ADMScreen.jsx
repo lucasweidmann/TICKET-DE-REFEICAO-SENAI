@@ -1,7 +1,6 @@
 // 4. Tela de ADM
 // Permite cadastrar alunos (nome, matrícula, etc).
 // Permite visualizar quais alunos já pegaram o ticket no dia.
-// (Opcional) Histórico de uso dos tickets (por data).
 // Botão para "resetar" os tickets no fim do dia.
 
 // bora trabalhar agora, me deseje sorte
@@ -14,16 +13,12 @@ export default function ADMScreen() {
   const [nome, setNome] = useState("");
   const [matricula, setMatricula] = useState("");
   const [ticketsHoje, setTicketsHoje] = useState([]);
-  const [historicoTickets, setHistoricoTickets] = useState([]);
 
   useEffect(() => {
-    // Carrega alunos e histórico do AsyncStorage
+    // Carrega alunos do AsyncStorage
     (async () => {
       const storedAlunos = JSON.parse(await AsyncStorage.getItem("alunos")) || [];
       setAlunos(storedAlunos);
-
-      const storedHistorico = JSON.parse(await AsyncStorage.getItem("historicoTickets")) || [];
-      setHistoricoTickets(storedHistorico);
     })();
   }, []);
 
@@ -36,95 +31,68 @@ export default function ADMScreen() {
     }
 
     const novoAluno = { nome, matricula };
-    const novosAlunos = [...alunos, novoAluno];
-    setAlunos(novosAlunos);
-    await AsyncStorage.setItem("alunos", JSON.stringify(novosAlunos));
-
+    setAlunos([...alunos, novoAluno]);
+    await AsyncStorage.setItem("alunos", JSON.stringify([...alunos, novoAluno]));
     setNome("");
     setMatricula("");
   };
 
-  const darTicket = aluno => {
-    if (!ticketsHoje.find(a => a.matricula === aluno.matricula)) {
-      const novosTickets = [...ticketsHoje, aluno];
-      setTicketsHoje(novosTickets);
-    }
-  };
-
-  const handleResetTickets = async () => {
-    const novoHistorico = [
-      ...historicoTickets,
-      { date: new Date().toLocaleDateString(), tickets: ticketsHoje }
-    ];
-    setHistoricoTickets(novoHistorico);
-    await AsyncStorage.setItem("historicoTickets", JSON.stringify(novoHistorico));
+  const resetarTickets = async () => {
     setTicketsHoje([]);
+    Alert.alert("Sucesso", "Tickets resetados para o dia");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>ADM Screen</Text>
-
-      {/* Cadastro de Aluno */}
-      <Text style={styles.subtitle}>Cadastrar Aluno</Text>
+      <Text style={styles.title}>Cadastro de Alunos</Text>
       <TextInput
+        style={styles.input}
         placeholder="Nome"
         value={nome}
         onChangeText={setNome}
-        style={styles.input}
       />
       <TextInput
+        style={styles.input}
         placeholder="Matrícula"
         value={matricula}
         onChangeText={setMatricula}
-        style={styles.input}
       />
-      <Button title="Cadastrar" onPress={cadastrarAluno} />
-
-      {/* Lista de Alunos */}
-      <Text style={styles.subtitle}>Alunos</Text>
+      <Button title="Cadastrar Aluno" onPress={cadastrarAluno} />
       <FlatList
         data={alunos}
-        keyExtractor={item => item.matricula}
+        keyExtractor={(item) => item.matricula}
         renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text>{item.nome} ({item.matricula})</Text>
-            <Button title="Dar Ticket" onPress={() => darTicket(item)} />
+          <View style={styles.listItem}>
+            <Text>{item.nome} - {item.matricula}</Text>
           </View>
         )}
       />
-
-      {/* Tickets Hoje */}
-      <Text style={styles.subtitle}>Tickets Hoje</Text>
-      <FlatList
-        data={ticketsHoje}
-        keyExtractor={item => item.matricula}
-        renderItem={({ item }) => (
-          <Text>{item.nome} ({item.matricula})</Text>
-        )}
-      />
-
-      {/* Histórico */}
-      <Text style={styles.subtitle}>Histórico de Tickets</Text>
-      <FlatList
-        data={historicoTickets}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Text>{item.date}: {item.tickets.map(a => a.nome).join(", ")}</Text>
-        )}
-      />
-
-      <Button title="Resetar Tickets" onPress={handleResetTickets} color="red" />
+      <Button title="Resetar Tickets do Dia" onPress={resetarTickets} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
-  subtitle: { fontSize: 18, marginTop: 15, marginBottom: 5 },
-  input: { borderWidth: 1, borderColor: "#ccc", marginBottom: 10, padding: 8, borderRadius: 5 },
-  item: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  listItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
 });
-
-// caralho, que preguica
