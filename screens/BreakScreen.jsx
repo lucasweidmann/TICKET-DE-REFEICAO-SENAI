@@ -5,39 +5,42 @@ const BreakScreen = () => {
   const [isBreakActive, setIsBreakActive] = useState(false);
   const [remainingTime, setRemainingTime] = useState("");
 
-  const breakStartTime = new Date();
-  breakStartTime.setHours(15, 0, 0);
-  const breakEndTime = new Date();
-  breakEndTime.setHours(15, 15, 0);
+  const getNextBreakTime = (hours, minutes) => {
+    const now = new Date();
+    const breakTime = new Date();
+    breakTime.setHours(hours, minutes, 0, 0);
+    if (breakTime < now) {
+      breakTime.setDate(breakTime.getDate() + 1);
+    }
+    return breakTime;
+  };
+
+  const formatTime = (totalSeconds) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    return `${h}h ${m}m ${s}s`;
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
-  
-      const breakStartTime = new Date();
-      breakStartTime.setHours(16, 26, 0);
-  
-      const breakEndTime = new Date();
-      breakEndTime.setHours(16, 28, 0);
-  
+      const breakStartTime = getNextBreakTime(15, 30);
+      const breakEndTime = getNextBreakTime(15, 45);
+
       if (now >= breakStartTime && now <= breakEndTime) {
         setIsBreakActive(true);
         const timeLeft = Math.floor((breakEndTime - now) / 1000);
-        setRemainingTime(`${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`);
+        setRemainingTime(formatTime(timeLeft));
       } else {
         setIsBreakActive(false);
         const timeUntilStart = Math.floor((breakStartTime - now) / 1000);
-        setRemainingTime(
-          timeUntilStart > 0
-            ? `${Math.floor(timeUntilStart / 60)}m ${timeUntilStart % 60}s`
-            : "00:00"
-        );
+        setRemainingTime(formatTime(timeUntilStart > 0 ? timeUntilStart : 0));
       }
     }, 1000);
-  
+
     return () => clearInterval(interval);
   }, []);
-  
 
   return (
     <View style={styles.container}>
