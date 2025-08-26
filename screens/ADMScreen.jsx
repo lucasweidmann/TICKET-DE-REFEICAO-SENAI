@@ -1,9 +1,3 @@
-// 4. Tela de ADM
-// Permite cadastrar alunos (nome, matrícula, etc).
-// Permite visualizar quais alunos já pegaram o ticket no dia.
-// Botão para "resetar" os tickets no fim do dia.
-
-// bora trabalhar agora, me deseje sorte
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, FlatList, Alert, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -42,6 +36,13 @@ export default function ADMScreen() {
     Alert.alert("Sucesso", "Tickets resetados para o dia");
   };
 
+  const limparAsyncStorage = async () => {
+    await AsyncStorage.clear();
+    setAlunos([]);
+    setTicketsHoje([]);
+    Alert.alert("Sucesso", "AsyncStorage limpo");
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Cadastro de Alunos</Text>
@@ -68,6 +69,7 @@ export default function ADMScreen() {
         )}
       />
       <Button title="Resetar Tickets do Dia" onPress={resetarTickets} />
+      <Button title="Limpar Alunos Registrados ( AsyncStorage )" onPress={limparAsyncStorage} />
     </View>
   );
 }
