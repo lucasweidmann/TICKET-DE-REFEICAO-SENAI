@@ -2,6 +2,7 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/LoginScreen";
+import ADMScreen from "./screens/ADMScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +16,15 @@ export default function App() {
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
+      <Stack.Navigator initialRouteName="ADM">
+        <Stack.Screen 
+          name="ADM" 
+          component={ADMScreen} 
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
+  
+
   );
 }

@@ -5,105 +5,126 @@
 // Botão para "resetar" os tickets no fim do dia.
 
 // bora trabalhar agora, me deseje sorte
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, Button, FlatList, Alert, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ADMScreen = () => {
+export default function ADMScreen() {
   const [alunos, setAlunos] = useState([]);
   const [nome, setNome] = useState("");
   const [matricula, setMatricula] = useState("");
-  const [historicoTickets, setHistoricoTickets] = useState([]);
   const [ticketsHoje, setTicketsHoje] = useState([]);
+  const [historicoTickets, setHistoricoTickets] = useState([]);
 
-  const cadastrarAluno = () => {
-    if (nome && matricula) {
-      const novoAluno = { nome, matricula };
-      setAlunos([...alunos, novoAluno]);
-      setNome("");
-      setMatricula("");
+  useEffect(() => {
+    // Carrega alunos e histórico do AsyncStorage
+    (async () => {
+      const storedAlunos = JSON.parse(await AsyncStorage.getItem("alunos")) || [];
+      setAlunos(storedAlunos);
+
+      const storedHistorico = JSON.parse(await AsyncStorage.getItem("historicoTickets")) || [];
+      setHistoricoTickets(storedHistorico);
+    })();
+  }, []);
+
+  const cadastrarAluno = async () => {
+    if (!nome || !matricula) return Alert.alert("Erro", "Preencha todos os campos");
+
+    // Verifica se matrícula já existe
+    if (alunos.some(a => a.matricula === matricula)) {
+      return Alert.alert("Erro", "Matrícula já cadastrada");
+    }
+
+    const novoAluno = { nome, matricula };
+    const novosAlunos = [...alunos, novoAluno];
+    setAlunos(novosAlunos);
+    await AsyncStorage.setItem("alunos", JSON.stringify(novosAlunos));
+
+    setNome("");
+    setMatricula("");
+  };
+
+  const darTicket = aluno => {
+    if (!ticketsHoje.find(a => a.matricula === aluno.matricula)) {
+      const novosTickets = [...ticketsHoje, aluno];
+      setTicketsHoje(novosTickets);
     }
   };
 
-  const darTicket = (aluno) => {
-    if (!ticketsHoje.find((a) => a.matricula === aluno.matricula)) {
-      setTicketsHoje([...ticketsHoje, aluno]);
-    }
-  };
-
-  const handleResetTickets = () => {
-    setHistoricoTickets([
+  const handleResetTickets = async () => {
+    const novoHistorico = [
       ...historicoTickets,
-      { date: new Date().toLocaleDateString(), tickets: ticketsHoje },
-    ]);
+      { date: new Date().toLocaleDateString(), tickets: ticketsHoje }
+    ];
+    setHistoricoTickets(novoHistorico);
+    await AsyncStorage.setItem("historicoTickets", JSON.stringify(novoHistorico));
     setTicketsHoje([]);
   };
 
   return (
-    <div>
-      <h1>ADM Screen</h1>
+    <View style={styles.container}>
+      <Text style={styles.title}>ADM Screen</Text>
 
-      {/* Student Registration */}
-      <div>
-        <h2>Register Student</h2>
-        <input
-          type="text"
-          placeholder="Name"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Registration"
-          value={matricula}
-          onChange={(e) => setMatricula(e.target.value)}
-        />
-        <button onClick={cadastrarAluno}>Register</button>
-      </div>
+      {/* Cadastro de Aluno */}
+      <Text style={styles.subtitle}>Cadastrar Aluno</Text>
+      <TextInput
+        placeholder="Nome"
+        value={nome}
+        onChangeText={setNome}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Matrícula"
+        value={matricula}
+        onChangeText={setMatricula}
+        style={styles.input}
+      />
+      <Button title="Cadastrar" onPress={cadastrarAluno} />
 
-      {/* Students List */}
-      <div>
-        <h2>Students</h2>
-        <ul>
-          {alunos.map((aluno, index) => (
-            <li key={index}>
-              {aluno.nome} ({aluno.matricula})
-              <button onClick={() => darTicket(aluno)}>
-                Give Ticket
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* Lista de Alunos */}
+      <Text style={styles.subtitle}>Alunos</Text>
+      <FlatList
+        data={alunos}
+        keyExtractor={item => item.matricula}
+        renderItem={({ item }) => (
+          <View style={styles.item}>
+            <Text>{item.nome} ({item.matricula})</Text>
+            <Button title="Dar Ticket" onPress={() => darTicket(item)} />
+          </View>
+        )}
+      />
 
-      {/* Tickets Today */}
-      <div>
-        <h2>Tickets Today</h2>
-        <ul>
-          {ticketsHoje.map((aluno, index) => (
-            <li key={index}>
-              {aluno.nome} ({aluno.matricula})
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* Tickets Hoje */}
+      <Text style={styles.subtitle}>Tickets Hoje</Text>
+      <FlatList
+        data={ticketsHoje}
+        keyExtractor={item => item.matricula}
+        renderItem={({ item }) => (
+          <Text>{item.nome} ({item.matricula})</Text>
+        )}
+      />
 
-      {/* Ticket History */}
-      <div>
-        <h2>Ticket History</h2>
-        <ul>
-          {historicoTickets.map((entry, index) => (
-            <li key={index}>
-              {entry.date}: {entry.tickets.map((a) => a.nome).join(", ")}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* Histórico */}
+      <Text style={styles.subtitle}>Histórico de Tickets</Text>
+      <FlatList
+        data={historicoTickets}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <Text>{item.date}: {item.tickets.map(a => a.nome).join(", ")}</Text>
+        )}
+      />
 
-      {/* Reset Tickets */}
-      <div>
-        <button onClick={handleResetTickets}>Reset Tickets</button>
-      </div>
-    </div>
+      <Button title="Resetar Tickets" onPress={handleResetTickets} color="red" />
+    </View>
   );
-};
+}
 
-export default ADMScreen;
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20 },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+  subtitle: { fontSize: 18, marginTop: 15, marginBottom: 5 },
+  input: { borderWidth: 1, borderColor: "#ccc", marginBottom: 10, padding: 8, borderRadius: 5 },
+  item: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }
+});
+
+// caralho, que preguica
