@@ -5,11 +5,10 @@ const BreakScreen = () => {
   const [isBreakActive, setIsBreakActive] = useState(false);
   const [remainingTime, setRemainingTime] = useState("");
 
-  // Defina horários reais de intervalo
   const breakStartTime = new Date();
-  breakStartTime.setHours(15, 0, 0); // exemplo: 15:00
+  breakStartTime.setHours(15, 0, 0);
   const breakEndTime = new Date();
-  breakEndTime.setHours(15, 15, 0); // exemplo: 15:15
+  breakEndTime.setHours(15, 15, 0);
 
   useEffect(() => {
     const interval = setInterval(() => {
