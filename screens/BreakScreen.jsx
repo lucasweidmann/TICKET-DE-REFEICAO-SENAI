@@ -27,7 +27,6 @@ const BreakScreen = () => {
       const now = new Date();
       const breakStartTime = getNextBreakTime(15, 30);
       const breakEndTime = getNextBreakTime(15, 45);
-
       if (now >= breakStartTime && now <= breakEndTime) {
         setIsBreakActive(true);
         const timeLeft = Math.floor((breakEndTime - now) / 1000);
