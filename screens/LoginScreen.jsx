@@ -15,18 +15,24 @@ export default function LoginScreen() {
 
   const handleLoginAluno = async () => {
     const alunos = JSON.parse(await AsyncStorage.getItem("alunos")) || [];
-    const aluno = alunos.find(a => a.matricula === matricula);
-  
+    const aluno = alunos.find((a) => a.matricula === matricula);
+
     if (!aluno) return Alert.alert("Erro", "Matrícula inválida");
-  
-    await AsyncStorage.setItem("user", JSON.stringify({ tipo: "aluno", ...aluno }));
+
+    await AsyncStorage.setItem(
+      "user",
+      JSON.stringify({ tipo: "aluno", ...aluno })
+    );
     navigation.navigate("BreakScreen");
   };
-  
+
   const handleLoginAdmin = async () => {
     const admin = { usuario: "admin", senha: "1234" };
     if (matricula === admin.usuario && senha === admin.senha) {
-      await AsyncStorage.setItem("user", JSON.stringify({ tipo: "admin", usuario: matricula }));
+      await AsyncStorage.setItem(
+        "user",
+        JSON.stringify({ tipo: "admin", usuario: matricula })
+      );
       navigation.navigate("ADM");
     } else {
       Alert.alert("Erro", "Usuário ou senha incorretos");
@@ -35,15 +41,15 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>TELA DE LOGIN</Text>
       <TextInput
-        placeholder="Matrícula / Usuário"
+        placeholder="Matrícula do Aluno / Usuário do ADM"
         value={matricula}
         onChangeText={setMatricula}
         style={styles.input}
       />
       <TextInput
-        placeholder="Senha (somente ADM)"
+        placeholder="Senha (APENAS ADM)"
         value={senha}
         onChangeText={setSenha}
         secureTextEntry
@@ -58,5 +64,11 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", padding: 20 },
   title: { fontSize: 24, marginBottom: 20, textAlign: "center" },
-  input: { borderWidth: 1, borderColor: "#ccc", marginBottom: 15, padding: 10, borderRadius: 5 }
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    marginBottom: 15,
+    padding: 10,
+    borderRadius: 5,
+  },
 });
