@@ -1,8 +1,3 @@
-// 1. Tela de Login
-// Campo para o aluno entrar com matrícula ou código.
-// Campo para o administrador fazer login com senha.
-// Validação simples (sem necessidade de servidor, pode ser feita com JSON ou AsyncStorage)
-
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,7 +18,8 @@ export default function LoginScreen() {
       "user",
       JSON.stringify({ tipo: "aluno", ...aluno })
     );
-    navigation.navigate("BreakScreen");
+
+    navigation.replace("AppDrawer"); // vai para Drawer
   };
 
   const handleLoginAdmin = async () => {
@@ -33,7 +29,7 @@ export default function LoginScreen() {
         "user",
         JSON.stringify({ tipo: "admin", usuario: matricula })
       );
-      navigation.navigate("ADM");
+      navigation.replace("ADM"); // vai para tela ADM
     } else {
       Alert.alert("Erro", "Usuário ou senha incorretos");
     }
@@ -42,12 +38,14 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>TELA DE LOGIN</Text>
+
       <TextInput
         placeholder="Matrícula do Aluno / Usuário do ADM"
         value={matricula}
         onChangeText={setMatricula}
         style={styles.input}
       />
+
       <TextInput
         placeholder="Senha (APENAS ADM)"
         value={senha}
@@ -55,6 +53,7 @@ export default function LoginScreen() {
         secureTextEntry
         style={styles.input}
       />
+
       <Button title="Login Aluno" onPress={handleLoginAluno} />
       <Button title="Login ADM" onPress={handleLoginAdmin} />
     </View>
