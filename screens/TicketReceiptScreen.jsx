@@ -1,138 +1,129 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Button,
-  Alert,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, Button, Alert, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
-import MapView, { Marker } from "react-native-maps";
 
-const SCHOOL_COORDS = {
-  latitude: -23.561684,
-  longitude: -46.625378,
-  radius: 100, // metros
-};
+export default function TicketReceiptScreen() {
+  const [isNearBreak, setIsNearBreak] = useState(false);
+  const [hasTicketToday, setHasTicketToday] = useState(false);
+  const [inRegion, setInRegion] = useState(false);
 
-export default function LocationScreen({ navigation }) {
-  const [location, setLocation] = useState(null);
-  const [address, setAddress] = useState(null);
-  const [hasPermission, setHasPermission] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // localização permitida (ex.: escola)
+  const allowedCoords = {
+    latitude: -27.61838134931327,
+    longitude: -48.66277801339434,
+  };
+  const allowedRadius = 100; // metros
+
+  const breakStartHour = 15;
+  const breakStartMinute = 30;
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      setHasPermission(status === "granted");
+    const checkEligibility = async () => {
+      const now = new Date();
 
-      if (status !== "granted") {
-        Alert.alert(
-          "Permissão negada",
-          "Precisamos da sua localização para continuar"
-        );
-        setLoading(false);
-        return;
-      }
+      // calcula horário do intervalo
+      const breakStart = new Date();
+      breakStart.setHours(breakStartHour, breakStartMinute, 0, 0);
 
-      const loc = await Location.getCurrentPositionAsync({});
-      setLocation(loc.coords);
+      const diffMs = breakStart - now;
+      const diffMinutes = diffMs / 1000 / 60;
 
-      const addr = await Location.reverseGeocodeAsync({
-        latitude: loc.coords.latitude,
-        longitude: loc.coords.longitude,
-      });
-      if (addr.length > 0) setAddress(addr[0]);
+      setIsNearBreak(diffMinutes <= 5 && diffMinutes >= 0);
 
-      setLoading(false);
-    })();
+      // ticket do dia
+      const today = now.toDateString();
+      const stored = JSON.parse(await AsyncStorage.getItem("ticketHoje"));
+      setHasTicketToday(stored && stored.date === today);
+    };
+
+    checkEligibility();
+    const interval = setInterval(checkEligibility, 30 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  const checkLocation = () => {
-    if (!hasPermission || !location) return;
+  // checa localização atual
+  const checkLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Permissão negada", "Não foi possível acessar a localização");
+      return;
+    }
 
-    const distance = getDistance(
-      location.latitude,
-      location.longitude,
-      SCHOOL_COORDS.latitude,
-      SCHOOL_COORDS.longitude
+    const current = await Location.getCurrentPositionAsync({});
+    const distance = getDistanceFromLatLonInM(
+      current.coords.latitude,
+      current.coords.longitude,
+      allowedCoords.latitude,
+      allowedCoords.longitude
     );
 
-    if (distance <= SCHOOL_COORDS.radius) {
-      Alert.alert("Sucesso", "Você está na região permitida");
-      navigation.navigate("Ticket");
-    } else {
-      Alert.alert(
-        "Fora da área",
-        "Você precisa estar na escola para pegar o ticket"
-      );
+    setInRegion(distance <= allowedRadius);
+    if (distance > allowedRadius) {
+      Alert.alert("Erro", "Você não está dentro da região permitida");
     }
   };
 
-  const getDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3; // metros
-    const φ1 = (lat1 * Math.PI) / 180;
-    const φ2 = (lat2 * Math.PI) / 180;
-    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-
+  // função utilitária: calcula distância entre coordenadas
+  const getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // raio da Terra em metros
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
-      Math.sin(Δφ / 2) ** 2 +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
     return R * c;
   };
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  const handleReceiveTicket = async () => {
+    await checkLocation(); // garante verificação antes de liberar
+
+    if (!inRegion) return; // não libera se fora da região
+    if (hasTicketToday)
+      return Alert.alert("Erro", "Você já recebeu um ticket hoje");
+
+    const today = new Date().toDateString();
+    await AsyncStorage.setItem("ticketHoje", JSON.stringify({ date: today }));
+
+    setHasTicketToday(true);
+    Alert.alert("Sucesso", "Ticket disponível!");
+  };
 
   return (
     <View style={styles.container}>
-      {location && (
-        <>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: location.latitude,
-              longitude: location.longitude,
-              latitudeDelta: 0.005,
-              longitudeDelta: 0.005,
-            }}
-          >
-            <Marker
-              coordinate={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-              }}
-              title="Você está aqui"
-            />
-          </MapView>
-          <Text style={styles.text}>
-            {address
-              ? `${address.name || ""}, ${address.street || ""}, ${
-                  address.city || ""
-                }`
-              : "Endereço não disponível"}
-          </Text>
-          <Button
-            title="Verificar proximidade da escola"
-            onPress={checkLocation}
-          />
-        </>
-      )}
+      <Text style={styles.title}>Receber Ticket</Text>
+
+      <Button title="Verificar Localização" onPress={checkLocation} />
+      <Text style={styles.info}>
+        Região: {inRegion ? "Dentro da Escola" : "Fora da Escola"}
+      </Text>
+
+      <View style={{ marginVertical: 20 }}>
+        {hasTicketToday ? (
+          <Text style={styles.success}>Status: Ticket disponível</Text>
+        ) : isNearBreak ? (
+          <Button title="Receber Ticket" onPress={handleReceiveTicket} />
+        ) : (
+          <Text style={styles.waiting}>Aguardando horário do intervalo...</Text>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  map: { flex: 1 },
-  text: { textAlign: "center", padding: 10, fontSize: 16 },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: { fontSize: 22, marginBottom: 20, fontWeight: "bold" },
+  info: { fontSize: 16, marginVertical: 10 },
+  waiting: { fontSize: 16, color: "gray" },
+  success: { fontSize: 18, color: "green", fontWeight: "bold" },
 });
