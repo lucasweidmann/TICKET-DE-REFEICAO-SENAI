@@ -16,11 +16,6 @@ export default function TicketValidationScreen() {
 
   useEffect(() => {
     const loadData = async () => {
-      const user = JSON.parse(await AsyncStorage.getItem("user"));
-      if (user && user.tipo === "aluno") {
-        setAluno(user);
-      }
-
       const ticket = JSON.parse(await AsyncStorage.getItem("ticketHoje"));
       const today = new Date().toDateString();
 
@@ -31,12 +26,16 @@ export default function TicketValidationScreen() {
       } else {
         setTicketStatus("Ticket disponível");
       }
+
+      if (ticket && ticket.aluno) {
+        setAluno(ticket.aluno);
+      }
     };
 
     loadData();
   }, []);
 
-  // função utilitária: distância em metros entre duas coordenadas
+  // utilitário: distância em metros entre duas coordenadas
   const getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -52,7 +51,6 @@ export default function TicketValidationScreen() {
   };
 
   const validateTicket = async () => {
-    // checa localização
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       Alert.alert("Permissão negada", "Não foi possível acessar a localização");

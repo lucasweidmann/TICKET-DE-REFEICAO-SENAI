@@ -8,7 +8,7 @@ export default function TicketReceiptScreen() {
   const [hasTicketToday, setHasTicketToday] = useState(false);
   const [inRegion, setInRegion] = useState(false);
 
-  // localização permitida (ex.: escola)
+  // localização da escola
   const allowedCoords = {
     latitude: -27.61838134931327,
     longitude: -48.66277801339434,
@@ -22,7 +22,7 @@ export default function TicketReceiptScreen() {
     const checkEligibility = async () => {
       const now = new Date();
 
-      // calcula horário do intervalo
+      // horário do intervalo
       const breakStart = new Date();
       breakStart.setHours(breakStartHour, breakStartMinute, 0, 0);
 
@@ -42,8 +42,23 @@ export default function TicketReceiptScreen() {
     return () => clearInterval(interval);
   }, []);
 
-  // checa localização atual
-  const checkLocation = async () => {
+  // utilitário: distância em metros entre duas coordenadas
+  const getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  // valida localização e recebe ticket
+  const receiveTicket = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       Alert.alert("Permissão negada", "Não foi possível acessar a localização");
@@ -58,46 +73,40 @@ export default function TicketReceiptScreen() {
       allowedCoords.longitude
     );
 
-    setInRegion(distance <= allowedRadius);
-    if (distance > allowedRadius) {
-      Alert.alert("Erro", "Você não está dentro da região permitida");
+    const insideRegion = distance <= allowedRadius;
+    setInRegion(insideRegion);
+
+    if (!insideRegion) {
+      return Alert.alert("Erro", "Você não está dentro da região permitida");
     }
-  };
-
-  // função utilitária: calcula distância entre coordenadas
-  const getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3; // raio da Terra em metros
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  const handleReceiveTicket = async () => {
-    await checkLocation(); // garante verificação antes de liberar
-
-    if (!inRegion) return; // não libera se fora da região
-    if (hasTicketToday)
+    if (!isNearBreak) {
+      return Alert.alert("Erro", "Ainda não é horário para receber ticket");
+    }
+    if (hasTicketToday) {
       return Alert.alert("Erro", "Você já recebeu um ticket hoje");
+    }
+
+    // pega dados do aluno logado
+    const aluno = JSON.parse(await AsyncStorage.getItem("user"));
 
     const today = new Date().toDateString();
-    await AsyncStorage.setItem("ticketHoje", JSON.stringify({ date: today }));
+    await AsyncStorage.setItem(
+      "ticketHoje",
+      JSON.stringify({
+        date: today,
+        used: false,
+        aluno: aluno ? { nome: aluno.nome, matricula: aluno.matricula } : null,
+      })
+    );
 
     setHasTicketToday(true);
-    Alert.alert("Sucesso", "Ticket disponível!");
+    Alert.alert("Sucesso", "Ticket recebido!");
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Receber Ticket</Text>
 
-      <Button title="Verificar Localização" onPress={checkLocation} />
       <Text style={styles.info}>
         Região: {inRegion ? "Dentro da Escola" : "Fora da Escola"}
       </Text>
@@ -106,7 +115,7 @@ export default function TicketReceiptScreen() {
         {hasTicketToday ? (
           <Text style={styles.success}>Status: Ticket disponível</Text>
         ) : isNearBreak ? (
-          <Button title="Receber Ticket" onPress={handleReceiveTicket} />
+          <Button title="Receber Ticket" onPress={receiveTicket} />
         ) : (
           <Text style={styles.waiting}>Aguardando horário do intervalo...</Text>
         )}
