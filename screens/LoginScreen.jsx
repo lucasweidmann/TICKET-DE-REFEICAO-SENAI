@@ -61,13 +61,12 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 24, marginBottom: 20, textAlign: "center" },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    marginBottom: 15,
-    padding: 10,
-    borderRadius: 5,
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#f5f5f5", // branco nao tao branco pra cor de fundo
   },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
 });
