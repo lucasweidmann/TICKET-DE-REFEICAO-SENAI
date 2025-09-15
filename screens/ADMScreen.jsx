@@ -102,13 +102,45 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#f5f5f5", // Cor de fundo clara
+    backgroundColor: "#f5f5f5", 
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#333", // Cor do texto
+    color: "#333", 
     marginBottom: 20,
-    textAlign: "center", // Centraliza o título
+    textAlign: "center", 
   },
+input: {
+  borderWidth: 1,
+  borderColor: "#ccc", // Borda cinza clara
+  padding: 10,
+  marginBottom: 15,
+  borderRadius: 8, // Bordas arredondadas
+  backgroundColor: "#fff", // Fundo branco
+},
+button: {
+  backgroundColor: "#007BFF", // Azul padrão
+  padding: 15,
+  borderRadius: 8,
+  alignItems: "center",
+  marginBottom: 10,
+},
+buttonText: {
+  color: "#fff", // Texto branco
+  fontWeight: "bold",
+  fontSize: 16,
+},
+listItem: {
+  padding: 15,
+  borderBottomWidth: 1,
+  borderBottomColor: "#ddd", // Linha separadora
+  backgroundColor: "#fff",
+  borderRadius: 8,
+  marginBottom: 10,
+},
+listItemText: {
+  fontSize: 16,
+  color: "#333",
+},
 });
