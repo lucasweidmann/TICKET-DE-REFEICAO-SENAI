@@ -69,4 +69,36 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    color: "#333", 
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc", 
+    padding: 10,
+    marginBottom: 15,
+    borderRadius: 8, 
+    backgroundColor: "#fff",
+  },
+  button: {
+    backgroundColor: "#007BFF", 
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: "#fff", 
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  listItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd", 
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    marginBottom: 10,
+  },
 });
