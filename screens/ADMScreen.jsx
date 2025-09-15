@@ -99,14 +99,16 @@ export default function ADMScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 20, fontWeight: "bold", marginBottom: 20 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#f5f5f5", // Cor de fundo clara
   },
-  listItem: { padding: 10, borderBottomWidth: 1, borderBottomColor: "#ccc" },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333", // Cor do texto
+    marginBottom: 20,
+    textAlign: "center", // Centraliza o título
+  },
 });
