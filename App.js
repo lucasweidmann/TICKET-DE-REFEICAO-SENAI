@@ -2,6 +2,7 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { Button } from "react-native";
 
 import LoginScreen from "./screens/LoginScreen";
 import ADMScreen from "./screens/ADMScreen";
@@ -12,10 +13,16 @@ import TicketValidationScreen from "./screens/TicketValidationScreen";
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
-// Drawer sem a tela de Location
-function AppDrawer() {
+function AlunoDrawer({ navigation }) {
   return (
-    <Drawer.Navigator initialRouteName="Break">
+    <Drawer.Navigator
+      initialRouteName="Break"
+      screenOptions={{
+        headerRight: () => (
+          <Button title="Sair" onPress={() => navigation.replace("Login")} />
+        ),
+      }}
+    >
       <Drawer.Screen
         name="Break"
         component={BreakScreen}
@@ -25,6 +32,25 @@ function AppDrawer() {
         name="TicketReceipt"
         component={TicketReceiptScreen}
         options={{ title: "Receber Ticket" }}
+      />
+    </Drawer.Navigator>
+  );
+}
+
+function AdmDrawer({ navigation }) {
+  return (
+    <Drawer.Navigator
+      initialRouteName="ADM"
+      screenOptions={{
+        headerRight: () => (
+          <Button title="Sair" onPress={() => navigation.replace("Login")} />
+        ),
+      }}
+    >
+      <Drawer.Screen
+        name="ADM"
+        component={ADMScreen}
+        options={{ title: "Gerenciar Alunos" }}
       />
       <Drawer.Screen
         name="TicketValidation"
@@ -43,8 +69,8 @@ export default function App() {
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="ADM" component={ADMScreen} />
-        <Stack.Screen name="AppDrawer" component={AppDrawer} />
+        <Stack.Screen name="AppDrawer" component={AlunoDrawer} />
+        <Stack.Screen name="AdmDrawer" component={AdmDrawer} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -19,7 +19,7 @@ export default function LoginScreen() {
       JSON.stringify({ tipo: "aluno", ...aluno })
     );
 
-    navigation.replace("AppDrawer"); // vai para Drawer
+    navigation.replace("AppDrawer");
   };
 
   const handleLoginAdmin = async () => {
@@ -29,11 +29,12 @@ export default function LoginScreen() {
         "user",
         JSON.stringify({ tipo: "admin", usuario: matricula })
       );
-      navigation.replace("ADM"); // vai para tela ADM
+      navigation.replace("AdmDrawer");
     } else {
       Alert.alert("Erro", "Usuário ou senha incorretos");
     }
   };
+  
 
   return (
     <View style={styles.container}>

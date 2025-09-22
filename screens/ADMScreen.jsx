@@ -87,7 +87,7 @@ export default function ADMScreen() {
         onPress={limparAsyncStorage}
       />
 
-      {/* Botão voltar para Login */}
+      {}
       <View style={{ marginTop: 20 }}>
         <Button
           title="Voltar para Login"
@@ -113,28 +113,28 @@ const styles = StyleSheet.create({
   },
 input: {
   borderWidth: 1,
-  borderColor: "#ccc", // Borda cinza clara
+  borderColor: "#ccc",
   padding: 10,
   marginBottom: 15,
-  borderRadius: 8, // Bordas arredondadas
-  backgroundColor: "#fff", // Fundo branco
+  borderRadius: 8,
+  backgroundColor: "#fff",
 },
 button: {
-  backgroundColor: "#007BFF", // Azul padrão
+  backgroundColor: "#007BFF",
   padding: 15,
   borderRadius: 8,
   alignItems: "center",
   marginBottom: 10,
 },
 buttonText: {
-  color: "#fff", // Texto branco
+  color: "#fff",
   fontWeight: "bold",
   fontSize: 16,
 },
 listItem: {
   padding: 15,
   borderBottomWidth: 1,
-  borderBottomColor: "#ddd", // Linha separadora
+  borderBottomColor: "#ddd",
   backgroundColor: "#fff",
   borderRadius: 8,
   marginBottom: 10,

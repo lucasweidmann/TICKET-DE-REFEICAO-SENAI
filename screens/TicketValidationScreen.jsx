@@ -1,41 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, Alert, StyleSheet } from "react-native";
+import { View, Text, Button, Alert, FlatList, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 
 export default function TicketValidationScreen() {
-  const [aluno, setAluno] = useState(null);
-  const [ticketStatus, setTicketStatus] = useState("Carregando...");
-
-  // localização da escola
+  const [ticketsHoje, setTicketsHoje] = useState([]);
   const allowedCoords = {
     latitude: -27.61838134931327,
     longitude: -48.66277801339434,
   };
-  const allowedRadius = 100; // metros
+  const allowedRadius = 100;
+
+  const loadTickets = async () => {
+    const today = new Date().toDateString();
+    const stored = JSON.parse(await AsyncStorage.getItem("ticketsHoje")) || [];
+    const filtered = stored.filter(t => t.date === today);
+    setTicketsHoje(filtered);
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      const ticket = JSON.parse(await AsyncStorage.getItem("ticketHoje"));
-      const today = new Date().toDateString();
-
-      if (!ticket || ticket.date !== today) {
-        setTicketStatus("Nenhum ticket emitido");
-      } else if (ticket.used) {
-        setTicketStatus("Ticket já usado");
-      } else {
-        setTicketStatus("Ticket disponível");
-      }
-
-      if (ticket && ticket.aluno) {
-        setAluno(ticket.aluno);
-      }
-    };
-
-    loadData();
+    loadTickets();
   }, []);
 
-  // utilitário: distância em metros entre duas coordenadas
   const getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -50,7 +36,7 @@ export default function TicketValidationScreen() {
     return R * c;
   };
 
-  const validateTicket = async () => {
+  const validateTicket = async (ticket) => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       Alert.alert("Permissão negada", "Não foi possível acessar a localização");
@@ -66,60 +52,42 @@ export default function TicketValidationScreen() {
     );
 
     if (distance > allowedRadius) {
-      return Alert.alert("Erro", "Aluno não está na região permitida");
+      return Alert.alert("Erro", "Você não está na região permitida");
     }
 
-    const ticket = JSON.parse(await AsyncStorage.getItem("ticketHoje"));
-    const today = new Date().toDateString();
+    const allTickets = JSON.parse(await AsyncStorage.getItem("ticketsHoje")) || [];
+    const newTickets = allTickets.filter(t => t.aluno.matricula !== ticket.aluno.matricula);
+    await AsyncStorage.setItem("ticketsHoje", JSON.stringify(newTickets));
 
-    if (!ticket || ticket.date !== today) {
-      return Alert.alert("Erro", "Nenhum ticket válido encontrado");
-    }
-    if (ticket.used) {
-      return Alert.alert("Erro", "Ticket já foi usado");
-    }
-
-    // marca como usado
-    await AsyncStorage.setItem(
-      "ticketHoje",
-      JSON.stringify({ ...ticket, used: true })
-    );
-
-    setTicketStatus("Ticket já usado");
-    Alert.alert("Sucesso", "Ticket validado com sucesso!");
+    Alert.alert("Sucesso", `Ticket do aluno ${ticket.aluno.nome} validado!`);
+    loadTickets();
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Validação de Ticket</Text>
-
-      {aluno ? (
-        <View style={styles.infoBox}>
-          <Text style={styles.info}>Nome: {aluno.nome}</Text>
-          <Text style={styles.info}>Matrícula: {aluno.matricula}</Text>
-        </View>
+      <Text style={styles.title}>Validação de Tickets</Text>
+      {ticketsHoje.length === 0 ? (
+        <Text style={styles.info}>Nenhum ticket registrado hoje</Text>
       ) : (
-        <Text style={styles.info}>Nenhum aluno logado</Text>
-      )}
-
-      <Text style={styles.status}>Status: {ticketStatus}</Text>
-
-      {ticketStatus === "Ticket disponível" && (
-        <Button title="Validar Ticket" onPress={validateTicket} />
+        <FlatList
+          data={ticketsHoje}
+          keyExtractor={(item) => item.aluno.matricula}
+          renderItem={({ item }) => (
+            <View style={styles.ticketBox}>
+              <Text style={styles.info}>Nome: {item.aluno.nome}</Text>
+              <Text style={styles.info}>Matrícula: {item.aluno.matricula}</Text>
+              <Button title="Validar Ticket" onPress={() => validateTicket(item)} />
+            </View>
+          )}
+        />
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  title: { fontSize: 22, marginBottom: 20, fontWeight: "bold" },
-  infoBox: { marginBottom: 20 },
-  info: { fontSize: 16 },
-  status: { fontSize: 18, marginVertical: 20, fontWeight: "bold" },
+  container: { flex: 1, padding: 20 },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+  info: { fontSize: 16, marginBottom: 5 },
+  ticketBox: { padding: 15, marginBottom: 15, borderWidth: 1, borderColor: "#ccc", borderRadius: 8 },
 });

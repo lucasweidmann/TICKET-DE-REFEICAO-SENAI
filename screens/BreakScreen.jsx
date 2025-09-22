@@ -16,23 +16,19 @@ const BreakScreen = () => {
     const interval = setInterval(() => {
       const now = new Date();
 
-      // intervalo de hoje
       const breakStart = new Date();
-      breakStart.setHours(15, 15, 0, 0);
+      breakStart.setHours(16, 10, 0, 0);
 
       const breakEnd = new Date();
-      breakEnd.setHours(15, 30, 0, 0);
+      breakEnd.setHours(16, 15, 0, 0);
 
       if (now >= breakStart && now <= breakEnd) {
-        // estamos dentro do intervalo
         setIsBreakActive(true);
         const timeLeft = Math.floor((breakEnd - now) / 1000);
         setRemainingTime(formatTime(timeLeft));
       } else {
-        // estamos fora do intervalo → calcula tempo até o próximo início
         setIsBreakActive(false);
 
-        // se já passou do fim de hoje, usa amanhã
         if (now > breakEnd) {
           breakStart.setDate(breakStart.getDate() + 1);
         }
