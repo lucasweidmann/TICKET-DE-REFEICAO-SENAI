@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
+
+import { View, Text, TextInput, Button, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import Theme from "./styles/ThemeStyles";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -36,15 +38,16 @@ export default function LoginScreen() {
   };
   
 
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>TELA DE LOGIN</Text>
+    <View style={[Theme.container, { justifyContent: "center" }]}> 
+      <Text style={Theme.header}>TELA DE LOGIN</Text>
 
       <TextInput
         placeholder="Matrícula do Aluno / Usuário do ADM"
         value={matricula}
         onChangeText={setMatricula}
-        style={styles.input}
+        style={Theme.input}
       />
 
       <TextInput
@@ -52,23 +55,13 @@ export default function LoginScreen() {
         value={senha}
         onChangeText={setSenha}
         secureTextEntry
-        style={styles.input}
+        style={Theme.input}
       />
 
-      <Button title="Login Aluno" onPress={handleLoginAluno} />
-      <Button title="Login ADM" onPress={handleLoginAdmin} />
+      <View style={{ marginBottom: 10 }}>
+        <Button title="Login Aluno" onPress={handleLoginAluno} color="#000000ff" />
+      </View>
+      <Button title="Login ADM" onPress={handleLoginAdmin} color="#000000ff" />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: "center", padding: 20 },
-    title: { fontSize: 24, marginBottom: 20, textAlign: "center" },
-    input: {
-      borderWidth: 1,
-      borderColor: "#ccc",
-      marginBottom: 15,
-      padding: 10,
-      borderRadius: 5,
-    },
-});

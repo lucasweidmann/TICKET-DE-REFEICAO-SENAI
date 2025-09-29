@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+
+import { View, Text } from "react-native";
+import Theme from "./styles/ThemeStyles";
 
 const BreakScreen = () => {
   const [isBreakActive, setIsBreakActive] = useState(false);
@@ -42,22 +44,15 @@ const BreakScreen = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
+    <View style={[Theme.container, { justifyContent: "center", alignItems: "center" }]}> 
+      <Text style={Theme.header}>
         {isBreakActive ? "Intervalo Ativo" : "Intervalo Inativo"}
       </Text>
-      <Text style={styles.time}>
-        {isBreakActive ? "Tempo restante:" : "Tempo até o início:"}{" "}
-        {remainingTime}
+      <Text style={[Theme.cardText, { fontSize: 18 }]}> 
+        {isBreakActive ? "Tempo restante:" : "Tempo até o início:"} {remainingTime}
       </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  title: { fontSize: 24, marginBottom: 20 },
-  time: { fontSize: 18 },
-});
 
 export default BreakScreen;

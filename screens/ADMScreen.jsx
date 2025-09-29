@@ -10,22 +10,15 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import Theme from "./styles/ThemeStyles";
 
 export default function ADMScreen() {
   const navigation = useNavigation();
   const [alunos, setAlunos] = useState([]);
   const [nome, setNome] = useState("");
   const [matricula, setMatricula] = useState("");
-  const [ticketsHoje, setTicketsHoje] = useState([]);
 
-  useEffect(() => {
-    (async () => {
-      const storedAlunos =
-        JSON.parse(await AsyncStorage.getItem("alunos")) || [];
-      setAlunos(storedAlunos);
-    })();
-  }, []);
-
+  // Funções de cadastro, reset e limpeza (adicione aqui as funções que estavam no componente original)
   const cadastrarAluno = async () => {
     if (!nome || !matricula)
       return Alert.alert("Erro", "Preencha todos os campos");
@@ -41,106 +34,73 @@ export default function ADMScreen() {
   };
 
   const resetarTickets = async () => {
-    setTicketsHoje([]);
+    await AsyncStorage.setItem("ticketsHoje", JSON.stringify([]));
     Alert.alert("Sucesso", "Tickets resetados para o dia");
   };
 
   const limparAsyncStorage = async () => {
     await AsyncStorage.clear();
     setAlunos([]);
-    setTicketsHoje([]);
     Alert.alert("Sucesso", "AsyncStorage limpo");
   };
 
+  useEffect(() => {
+    (async () => {
+      const storedAlunos = JSON.parse(await AsyncStorage.getItem("alunos")) || [];
+      setAlunos(storedAlunos);
+    })();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Cadastro de Alunos</Text>
+    <View style={Theme.container}>
+      <Text style={Theme.header}>Cadastro de Alunos</Text>
       <TextInput
-        style={styles.input}
+        style={Theme.input}
         placeholder="Nome"
         value={nome}
         onChangeText={setNome}
       />
       <TextInput
-        style={styles.input}
+        style={Theme.input}
         placeholder="Matrícula"
         value={matricula}
         onChangeText={setMatricula}
       />
-      <Button title="Cadastrar Aluno" onPress={cadastrarAluno} />
+      <View style={{ marginBottom: 10 }}>
+        <Button title="Cadastrar Aluno" onPress={cadastrarAluno} color="#000000ff" />
+      </View>
 
       <FlatList
         data={alunos}
         keyExtractor={(item) => item.matricula}
         renderItem={({ item }) => (
-          <View style={styles.listItem}>
-            <Text>
+          <View style={Theme.card}>
+            <Text style={Theme.cardText}>
               {item.nome} - {item.matricula}
             </Text>
           </View>
         )}
       />
 
-      <Button title="Resetar Tickets do Dia" onPress={resetarTickets} />
-      <Button
-        title="Limpar Alunos Registrados (AsyncStorage)"
-        onPress={limparAsyncStorage}
-      />
+      <View style={{ marginBottom: 10 }}>
+        <Button title="Resetar Tickets do Dia" onPress={resetarTickets} color="#000000ff" />
+      </View>
+      <View style={{ marginBottom: 10 }}>
+        <Button
+          title="Limpar Alunos Registrados (AsyncStorage)"
+          onPress={limparAsyncStorage}
+          color="#000000ff"
+        />
+      </View>
 
-      {}
       <View style={{ marginTop: 20 }}>
         <Button
           title="Voltar para Login"
           onPress={() => navigation.replace("Login")}
+          color="#000000ff"
         />
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#f5f5f5", 
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333", 
-    marginBottom: 20,
-    textAlign: "center", 
-  },
-input: {
-  borderWidth: 1,
-  borderColor: "#ccc",
-  padding: 10,
-  marginBottom: 15,
-  borderRadius: 8,
-  backgroundColor: "#fff",
-},
-button: {
-  backgroundColor: "#007BFF",
-  padding: 15,
-  borderRadius: 8,
-  alignItems: "center",
-  marginBottom: 10,
-},
-buttonText: {
-  color: "#fff",
-  fontWeight: "bold",
-  fontSize: 16,
-},
-listItem: {
-  padding: 15,
-  borderBottomWidth: 1,
-  borderBottomColor: "#ddd",
-  backgroundColor: "#fff",
-  borderRadius: 8,
-  marginBottom: 10,
-},
-listItemText: {
-  fontSize: 16,
-  color: "#333",
-},
-});
+// ...

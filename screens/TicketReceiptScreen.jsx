@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, Alert, StyleSheet } from "react-native";
+import { View, Text, Button, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
+import Theme from "./styles/ThemeStyles";
 
 export default function TicketReceiptScreen() {
   const [isBreakActive, setIsBreakActive] = useState(false);
@@ -94,28 +95,21 @@ export default function TicketReceiptScreen() {
     Alert.alert("Sucesso", "Ticket recebido!");
   };
 
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Receber Ticket</Text>
-      <Text style={styles.info}>Região: {inRegion ? "Dentro da Escola" : "Fora da Escola"}</Text>
+    <View style={[Theme.container, { alignItems: "center", justifyContent: "center" }]}> 
+      <Text style={Theme.header}>Receber Ticket</Text>
+      <Text style={[Theme.cardText, { marginVertical: 10 }]}>Região: {inRegion ? "Dentro da Escola" : "Fora da Escola"}</Text>
 
       <View style={{ marginVertical: 20 }}>
         {hasTicketToday ? (
-          <Text style={styles.success}>Status: Ticket já registrado hoje</Text>
+          <Text style={[Theme.cardText, { color: "green", fontWeight: "bold", fontSize: 18 }]}>Status: Ticket já registrado hoje</Text>
         ) : isBreakActive ? (
-          <Button title="Receber Ticket" onPress={receiveTicket} />
+          <Button title="Receber Ticket" onPress={receiveTicket} color="#ff6b35" />
         ) : (
-          <Text style={styles.waiting}>Aguardando horário do intervalo...</Text>
+          <Text style={[Theme.cardText, { color: "gray" }]}>Aguardando horário do intervalo...</Text>
         )}
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
-  title: { fontSize: 22, marginBottom: 20, fontWeight: "bold" },
-  info: { fontSize: 16, marginVertical: 10 },
-  waiting: { fontSize: 16, color: "gray" },
-  success: { fontSize: 18, color: "green", fontWeight: "bold" },
-});

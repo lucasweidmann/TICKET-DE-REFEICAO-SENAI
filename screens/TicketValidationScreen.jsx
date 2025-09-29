@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, Alert, FlatList, StyleSheet } from "react-native";
+import { View, Text, Button, Alert, FlatList } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
+import Theme from "./styles/ThemeStyles";
 
 export default function TicketValidationScreen() {
   const [ticketsHoje, setTicketsHoje] = useState([]);
@@ -63,20 +64,21 @@ export default function TicketValidationScreen() {
     loadTickets();
   };
 
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Validação de Tickets</Text>
+    <View style={Theme.container}>
+      <Text style={Theme.header}>Validação de Tickets</Text>
       {ticketsHoje.length === 0 ? (
-        <Text style={styles.info}>Nenhum ticket registrado hoje</Text>
+        <Text style={Theme.cardText}>Nenhum ticket registrado hoje</Text>
       ) : (
         <FlatList
           data={ticketsHoje}
           keyExtractor={(item) => item.aluno.matricula}
           renderItem={({ item }) => (
-            <View style={styles.ticketBox}>
-              <Text style={styles.info}>Nome: {item.aluno.nome}</Text>
-              <Text style={styles.info}>Matrícula: {item.aluno.matricula}</Text>
-              <Button title="Validar Ticket" onPress={() => validateTicket(item)} />
+            <View style={Theme.card}>
+              <Text style={Theme.cardText}>Nome: {item.aluno.nome}</Text>
+              <Text style={Theme.cardText}>Matrícula: {item.aluno.matricula}</Text>
+              <Button title="Validar Ticket" onPress={() => validateTicket(item)} color="#ff6b35" />
             </View>
           )}
         />
@@ -84,10 +86,3 @@ export default function TicketValidationScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
-  info: { fontSize: 16, marginBottom: 5 },
-  ticketBox: { padding: 15, marginBottom: 15, borderWidth: 1, borderColor: "#ccc", borderRadius: 8 },
-});
