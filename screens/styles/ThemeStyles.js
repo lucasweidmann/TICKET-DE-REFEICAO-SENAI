@@ -7,7 +7,6 @@ const Theme = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#ffffffff",
-    // Gradiente fake para fundo (para apps nativos, usar expo-linear-gradient para real)
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     borderBottomLeftRadius: 16,
@@ -91,12 +90,12 @@ const Theme = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 8,
     // Efeito "glow"
-    textShadowColor: "#2196f3",
+    textShadowColor: "#000000ff",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 12,
   },
   card: {
-    backgroundColor: "#181828",
+    backgroundColor: "#ffffffff",
     padding: 24,
     borderRadius: 22,
     marginBottom: 20,
@@ -114,13 +113,13 @@ const Theme = StyleSheet.create({
     color: "#000000ff",
     marginBottom: 12,
     letterSpacing: 1.2,
-    textShadowColor: "#000000ff",
+    textShadowColor: "#ffffffff",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
   },
   cardText: {
     fontSize: 17,
-    color: "#e3f2fd",
+    color: "#000000ff",
     letterSpacing: 0.7,
     fontFamily: "monospace",
   },
