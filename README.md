@@ -1,0 +1,3 @@
+Projeto de Conclusão da Matéria de Programação de Aplicativos do Curso Técnico de Desenvolvimentos de Sistemas do SENAI-Palhoça.
+Desenvolvido pelos Estudantes: Helena Nunes Goncalves, Lorenzo Oliveira Schwamborn e Lucas Aita Weidmann.
+...
