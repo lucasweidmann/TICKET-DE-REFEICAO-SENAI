@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, Alert, FlatList } from "react-native";
+import { View, Text, TouchableOpacity, Alert, FlatList } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 import Theme from "./styles/ThemeStyles";
@@ -78,7 +78,9 @@ export default function TicketValidationScreen() {
             <View style={Theme.card}>
               <Text style={Theme.cardText}>Nome: {item.aluno.nome}</Text>
               <Text style={Theme.cardText}>Matrícula: {item.aluno.matricula}</Text>
-              <Button title="Validar Ticket" onPress={() => validateTicket(item)} color="#ff6b35" />
+              <TouchableOpacity style={Theme.button} onPress={() => validateTicket(item)} activeOpacity={0.8}>
+                <Text style={Theme.buttonText}>Validar Ticket</Text>
+              </TouchableOpacity>
             </View>
           )}
         />

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { View, Text, TextInput, Button, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Theme from "./styles/ThemeStyles";
@@ -58,10 +58,17 @@ export default function LoginScreen() {
         style={Theme.input}
       />
 
-      <View style={{ marginBottom: 10 }}>
-        <Button title="Login Aluno" onPress={handleLoginAluno} color="#000000ff" />
-      </View>
-      <Button title="Login ADM" onPress={handleLoginAdmin} color="#000000ff" />
+      <TouchableOpacity
+        style={[Theme.button, { marginBottom: 10 }]}
+        onPress={handleLoginAluno}
+        activeOpacity={0.8}
+      >
+        <Text style={[Theme.buttonText, { textTransform: "none" }]}>aluno</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={Theme.button} onPress={handleLoginAdmin} activeOpacity={0.8}>
+        <Text style={[Theme.buttonText, { textTransform: "none" }]}>admin</Text>
+      </TouchableOpacity>
     </View>
   );
 }

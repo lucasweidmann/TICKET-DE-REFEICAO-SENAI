@@ -1,6 +1,12 @@
 // ticket-de-refeicao-senai/styles/ThemeStyles.js
 import { StyleSheet } from "react-native";
 
+// Centralized color palette used across the app
+export const Colors = {
+  primary: "#000000ff",
+  onPrimary: "#ffffffff",
+  background: "#ffffffff",
+};
 
 const Theme = StyleSheet.create({
   container: {
@@ -30,7 +36,7 @@ const Theme = StyleSheet.create({
     paddingBottom: 8,
   },
   subHeader: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
     color: "#000000ff",
     marginBottom: 12,
@@ -68,7 +74,7 @@ const Theme = StyleSheet.create({
     marginBottom: 14,
     borderWidth: 2.5,
     borderColor: "#000000ff",
-    minWidth: 200,
+    minWidth: 100,
     overflow: "hidden",
     // Simulação de gradiente com borda dupla
     borderTopWidth: 3.5,
@@ -78,15 +84,15 @@ const Theme = StyleSheet.create({
     // Efeito de "pressionado" visual (aplique scale em TouchableOpacity para animação real)
   },
   buttonText: {
-    color: "#fff",
-    fontSize: 22,
+    color: Colors.onPrimary,
+    fontSize: 15,
     fontWeight: "bold",
     letterSpacing: 2.5,
     textTransform: "uppercase",
     fontFamily: "monospace",
     textShadowColor: "#000000ff",
     textShadowOffset: { width: 0, height: 3 },
-    textShadowRadius: 8,
+    textShadowRadius: 2,
     textAlign: "center",
     paddingHorizontal: 8,
     // Efeito "glow"

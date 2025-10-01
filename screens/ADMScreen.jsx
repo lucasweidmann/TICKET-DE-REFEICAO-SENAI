@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, FlatList, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Theme from "./styles/ThemeStyles";
@@ -76,11 +76,9 @@ export default function ADMScreen() {
       />
 
       <View style={{ marginVertical: 10 }}>
-        <Button
-          title="Cadastrar Aluno"
-          onPress={cadastrarAluno}
-          color="#000000ff"
-        />
+        <TouchableOpacity style={Theme.button} onPress={cadastrarAluno} activeOpacity={0.8}>
+          <Text style={Theme.buttonText}>Cadastrar Aluno</Text>
+        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -96,19 +94,15 @@ export default function ADMScreen() {
       />
 
       <View style={{ marginVertical: 10 }}>
-        <Button
-          title="Limpar AsyncStorage"
-          onPress={limparAsyncStorage}
-          color="#FF0000"
-        />
+        <TouchableOpacity style={[Theme.button, { backgroundColor: '#FF0000' }]} onPress={limparAsyncStorage} activeOpacity={0.8}>
+          <Text style={[Theme.buttonText, { color: '#ffffffff' }]}>Limpar AsyncStorage</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={{ marginTop: 20 }}>
-        <Button
-          title="Voltar para Login"
-          onPress={() => navigation.replace("LoginChoice")}
-          color="#000000ff"
-        />
+        <TouchableOpacity style={Theme.button} onPress={() => navigation.replace("LoginChoice")} activeOpacity={0.8}>
+          <Text style={Theme.buttonText}>Voltar para Login</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

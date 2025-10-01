@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 import Theme from "./styles/ThemeStyles";
@@ -104,8 +104,10 @@ export default function TicketReceiptScreen() {
       <View style={{ marginVertical: 20 }}>
         {hasTicketToday ? (
           <Text style={[Theme.cardText, { color: "green", fontWeight: "bold", fontSize: 18 }]}>Status: Ticket já registrado hoje</Text>
-        ) : isBreakActive ? (
-          <Button title="Receber Ticket" onPress={receiveTicket} color="#ff6b35" />
+          ) : isBreakActive ? (
+          <TouchableOpacity style={Theme.button} onPress={receiveTicket} activeOpacity={0.8}>
+            <Text style={Theme.buttonText}>Receber Ticket</Text>
+          </TouchableOpacity>
         ) : (
           <Text style={[Theme.cardText, { color: "gray" }]}>Aguardando horário do intervalo...</Text>
         )}

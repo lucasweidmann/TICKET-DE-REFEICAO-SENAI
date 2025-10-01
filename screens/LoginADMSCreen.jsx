@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Theme from "./styles/ThemeStyles";
@@ -38,7 +38,9 @@ export default function LoginAdminScreen() {
         secureTextEntry
         style={Theme.input}
       />
-      <Button title="Login" onPress={handleLoginAdmin} />
+      <TouchableOpacity style={Theme.button} onPress={handleLoginAdmin} activeOpacity={0.8}>
+        <Text style={Theme.buttonText}>Login</Text>
+      </TouchableOpacity>
     </View>
   );
 }

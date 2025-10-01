@@ -2,7 +2,7 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { Button } from "react-native";
+import { Button, TouchableOpacity, Text } from "react-native";
 
 import LoginChoiceScreen from "./screens/LoginChoiceScreen";
 import LoginAlunoScreen from "./screens/LoginAlunoScreen";
@@ -21,10 +21,9 @@ function AlunoDrawer({ navigation }) {
       initialRouteName="Break"
       screenOptions={{
         headerRight: () => (
-          <Button
-            title="Sair"
-            onPress={() => navigation.replace("LoginChoice")}
-          />
+          <TouchableOpacity onPress={() => navigation.replace("LoginChoice")} style={{ marginRight: 10 }} activeOpacity={0.8}>
+            <Text style={{ color: '#000000ff', fontWeight: 'bold' }}>Sair</Text>
+          </TouchableOpacity>
         ),
       }}
     >
@@ -48,10 +47,9 @@ function AdmDrawer({ navigation }) {
       initialRouteName="ADM"
       screenOptions={{
         headerRight: () => (
-          <Button
-            title="Sair"
-            onPress={() => navigation.replace("LoginChoice")}
-          />
+          <TouchableOpacity onPress={() => navigation.replace("LoginChoice")} style={{ marginRight: 10 }} activeOpacity={0.8}>
+            <Text style={{ color: '#000000ff', fontWeight: 'bold' }}>Sair</Text>
+          </TouchableOpacity>
         ),
       }}
     >
