@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  FlatList,
-  Alert,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TextInput, Button, FlatList, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Theme from "./styles/ThemeStyles";
+
+// Função para gerar código aleatório
+const gerarCodigoAluno = () => {
+  const numeros = Math.floor(Math.random() * 900 + 100); // 3 dígitos
+  const letras = String.fromCharCode(Math.floor(Math.random() * 26) + 65); // letra maiúscula
+  const simbolos = ["#", "@", "$", "&", "*"];
+  const simbolo = simbolos[Math.floor(Math.random() * simbolos.length)];
+  return `${numeros}${simbolo}${letras}`;
+};
 
 export default function ADMScreen() {
   const navigation = useNavigation();
@@ -18,26 +19,30 @@ export default function ADMScreen() {
   const [nome, setNome] = useState("");
   const [matricula, setMatricula] = useState("");
 
-  // Funções de cadastro, reset e limpeza (adicione aqui as funções que estavam no componente original)
+  // Cadastro de aluno
   const cadastrarAluno = async () => {
     if (!nome || !matricula)
       return Alert.alert("Erro", "Preencha todos os campos");
+
     if (alunos.some((a) => a.matricula === matricula))
       return Alert.alert("Erro", "Matrícula já cadastrada");
 
-    const novoAluno = { nome, matricula };
+    const codigo = gerarCodigoAluno();
+    const novoAluno = { id: Date.now().toString(), nome, matricula, codigo };
     const novosAlunos = [...alunos, novoAluno];
+
     setAlunos(novosAlunos);
     await AsyncStorage.setItem("alunos", JSON.stringify(novosAlunos));
+
+    Alert.alert(
+      "Sucesso",
+      `Aluno(a) ${nome} cadastrado(a) com código: ${codigo}`
+    );
     setNome("");
     setMatricula("");
   };
 
-  const resetarTickets = async () => {
-    await AsyncStorage.setItem("ticketsHoje", JSON.stringify([]));
-    Alert.alert("Sucesso", "Tickets resetados para o dia");
-  };
-
+  // Limpar AsyncStorage
   const limparAsyncStorage = async () => {
     await AsyncStorage.clear();
     setAlunos([]);
@@ -46,7 +51,8 @@ export default function ADMScreen() {
 
   useEffect(() => {
     (async () => {
-      const storedAlunos = JSON.parse(await AsyncStorage.getItem("alunos")) || [];
+      const storedAlunos =
+        JSON.parse(await AsyncStorage.getItem("alunos")) || [];
       setAlunos(storedAlunos);
     })();
   }, []);
@@ -54,53 +60,56 @@ export default function ADMScreen() {
   return (
     <View style={Theme.container}>
       <Text style={Theme.header}>Cadastro de Alunos</Text>
+
       <TextInput
         style={Theme.input}
         placeholder="Nome"
         value={nome}
         onChangeText={setNome}
       />
+
       <TextInput
         style={Theme.input}
         placeholder="Matrícula"
         value={matricula}
         onChangeText={setMatricula}
       />
-      <View style={{ marginBottom: 10 }}>
-        <Button title="Cadastrar Aluno" onPress={cadastrarAluno} color="#000000ff" />
+
+      <View style={{ marginVertical: 10 }}>
+        <Button
+          title="Cadastrar Aluno"
+          onPress={cadastrarAluno}
+          color="#000000ff"
+        />
       </View>
 
       <FlatList
         data={alunos}
-        keyExtractor={(item) => item.matricula}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={Theme.card}>
             <Text style={Theme.cardText}>
-              {item.nome} - {item.matricula}
+              {item.nome} - Matrícula: {item.matricula} - Código: {item.codigo}
             </Text>
           </View>
         )}
       />
 
-      <View style={{ marginBottom: 10 }}>
-        <Button title="Resetar Tickets do Dia" onPress={resetarTickets} color="#000000ff" />
-      </View>
-      <View style={{ marginBottom: 10 }}>
+      <View style={{ marginVertical: 10 }}>
         <Button
-          title="Limpar Alunos Registrados (AsyncStorage)"
+          title="Limpar AsyncStorage"
           onPress={limparAsyncStorage}
-          color="#000000ff"
+          color="#FF0000"
         />
       </View>
 
       <View style={{ marginTop: 20 }}>
         <Button
           title="Voltar para Login"
-          onPress={() => navigation.replace("Login")}
+          onPress={() => navigation.replace("LoginChoice")}
           color="#000000ff"
         />
       </View>
     </View>
   );
 }
-// ...

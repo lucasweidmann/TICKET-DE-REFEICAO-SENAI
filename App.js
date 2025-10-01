@@ -4,7 +4,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Button } from "react-native";
 
-import LoginScreen from "./screens/LoginScreen";
+import LoginChoiceScreen from "./screens/LoginChoiceScreen";
+import LoginAlunoScreen from "./screens/LoginAlunoScreen";
+import LoginAdminScreen from "./screens/LoginADMSCreen";
 import ADMScreen from "./screens/ADMScreen";
 import BreakScreen from "./screens/BreakScreen";
 import TicketReceiptScreen from "./screens/TicketReceiptScreen";
@@ -19,7 +21,10 @@ function AlunoDrawer({ navigation }) {
       initialRouteName="Break"
       screenOptions={{
         headerRight: () => (
-          <Button title="Sair" onPress={() => navigation.replace("Login")} />
+          <Button
+            title="Sair"
+            onPress={() => navigation.replace("LoginChoice")}
+          />
         ),
       }}
     >
@@ -43,7 +48,10 @@ function AdmDrawer({ navigation }) {
       initialRouteName="ADM"
       screenOptions={{
         headerRight: () => (
-          <Button title="Sair" onPress={() => navigation.replace("Login")} />
+          <Button
+            title="Sair"
+            onPress={() => navigation.replace("LoginChoice")}
+          />
         ),
       }}
     >
@@ -65,10 +73,12 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="LoginChoice"
         screenOptions={{ headerShown: false }}
       >
-        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="LoginChoice" component={LoginChoiceScreen} />
+        <Stack.Screen name="LoginAluno" component={LoginAlunoScreen} />
+        <Stack.Screen name="LoginAdmin" component={LoginAdminScreen} />
         <Stack.Screen name="AppDrawer" component={AlunoDrawer} />
         <Stack.Screen name="AdmDrawer" component={AdmDrawer} />
       </Stack.Navigator>
