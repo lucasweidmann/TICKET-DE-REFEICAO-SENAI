@@ -1,0 +1,2 @@
+[REMOVIDO]
+Este arquivo foi removido pelo script de reversão. Se precisar do binário original, coloque o arquivo JPEG diretamente em assets/.
