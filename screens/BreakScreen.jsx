@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
 
-import { View, Text } from "react-native";
-import Theme from "./styles/ThemeStyles";
-
-const BreakScreen = () => {
+export default function BreakScreen() {
   const [isBreakActive, setIsBreakActive] = useState(false);
   const [remainingTime, setRemainingTime] = useState("");
 
@@ -19,10 +17,10 @@ const BreakScreen = () => {
       const now = new Date();
 
       const breakStart = new Date();
-      breakStart.setHours(16, 10, 0, 0);
+      breakStart.setHours(15, 0, 0, 0);
 
       const breakEnd = new Date();
-      breakEnd.setHours(16, 15, 0, 0);
+      breakEnd.setHours(15, 15, 0, 0);
 
       if (now >= breakStart && now <= breakEnd) {
         setIsBreakActive(true);
@@ -44,15 +42,31 @@ const BreakScreen = () => {
   }, []);
 
   return (
-    <View style={[Theme.container, { justifyContent: "center", alignItems: "center" }]}> 
-      <Text style={Theme.header}>
+    <View style={styles.container}>
+      <Text style={styles.header}>
         {isBreakActive ? "Intervalo Ativo" : "Intervalo Inativo"}
       </Text>
-      <Text style={[Theme.cardText, { fontSize: 18 }]}> 
-        {isBreakActive ? "Tempo restante:" : "Tempo até o início:"} {remainingTime}
+      <Text style={styles.timerText}>
+        {isBreakActive ? "Tempo Restante:" : "Tempo até o Início:"}{" "}
+        {remainingTime}
       </Text>
     </View>
   );
-};
+}
 
-export default BreakScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#000",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  timerText: { fontSize: 20, fontWeight: "500", color: "#000" },
+});

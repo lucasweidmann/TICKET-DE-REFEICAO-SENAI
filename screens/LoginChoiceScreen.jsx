@@ -1,6 +1,11 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ImageBackground, StyleSheet } from "react-native";
-import Theme from "./styles/ThemeStyles";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ImageBackground,
+  StyleSheet,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import planoDataUri from "../assets/planodefundo";
 
@@ -15,32 +20,49 @@ export default function LoginChoiceScreen() {
   }
 
   return (
-    <ImageBackground source={bgSource} style={styles.bg} imageStyle={styles.image} resizeMode="cover" blurRadius={3}>
-    <View style={styles.overlay} />
-    <View style={[Theme.container, { justifyContent: "center", alignItems: "center", backgroundColor: 'transparent' }]}> 
-        <Text style={Theme.header}>Você quer logar como:</Text>
+    <ImageBackground source={bgSource} style={{ flex: 1 }} resizeMode="cover">
+      <View style={styles.container}>
+        <Text style={styles.header}>Entrar como:</Text>
 
-        <View style={{ marginVertical: 10 }}>
-          <TouchableOpacity style={Theme.button} onPress={() => navigation.navigate("LoginAluno")} activeOpacity={0.8}>
-            <Text style={Theme.buttonText}>Aluno</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("LoginAluno")}
+        >
+          <Text style={styles.buttonText}>Aluno</Text>
+        </TouchableOpacity>
 
-        <View style={{ marginVertical: 10 }}>
-          <TouchableOpacity style={Theme.button} onPress={() => navigation.navigate("LoginAdmin")} activeOpacity={0.8}>
-            <Text style={Theme.buttonText}>Admin</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("LoginAdmin")}
+        >
+          <Text style={styles.buttonText}>Admin</Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  bg: { flex: 1, width: '100%', transform: [{ scale: 1.03 }] },
-  image: { width: '100%', height: '100%' },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.32)'
-  }
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#000",
+    marginBottom: 40,
+    textAlign: "center",
+  },
+  button: {
+    backgroundColor: "#000",
+    paddingVertical: 16,
+    paddingHorizontal: 40,
+    borderRadius: 12,
+    marginVertical: 10,
+    alignItems: "center",
+  },
+  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });

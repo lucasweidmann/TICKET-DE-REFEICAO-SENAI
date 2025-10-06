@@ -1,8 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, ImageBackground, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ImageBackground,
+  StyleSheet,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import Theme from "./styles/ThemeStyles";
 import planoDataUri from "../assets/planodefundo";
 
 export default function LoginAdminScreen() {
@@ -18,9 +25,7 @@ export default function LoginAdminScreen() {
         JSON.stringify({ tipo: "admin", usuario })
       );
       navigation.replace("AdmDrawer");
-    } else {
-      Alert.alert("Erro", "Usuário ou senha incorretos");
-    }
+    } else Alert.alert("Erro", "Usuário ou Senha Incorretos");
   };
 
   let bgSource;
@@ -31,25 +36,24 @@ export default function LoginAdminScreen() {
   }
 
   return (
-    <ImageBackground source={bgSource} style={styles.bg} resizeMode="cover" blurRadius={3}>
-      <View style={styles.overlay} />
-      <View style={[Theme.container, { justifyContent: "center", backgroundColor: 'transparent' }]}> 
-        <Text style={Theme.header}>Login Admin</Text>
+    <ImageBackground source={bgSource} style={{ flex: 1 }} resizeMode="cover">
+      <View style={styles.container}>
+        <Text style={styles.header}>Login Admin</Text>
         <TextInput
           placeholder="Usuário"
           value={usuario}
           onChangeText={setUsuario}
-          style={Theme.input}
+          style={styles.input}
         />
         <TextInput
           placeholder="Senha"
           value={senha}
           onChangeText={setSenha}
           secureTextEntry
-          style={Theme.input}
+          style={styles.input}
         />
-        <TouchableOpacity style={Theme.button} onPress={handleLoginAdmin} activeOpacity={0.8}>
-          <Text style={Theme.buttonText}>Login</Text>
+        <TouchableOpacity style={styles.button} onPress={handleLoginAdmin}>
+          <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -57,6 +61,36 @@ export default function LoginAdminScreen() {
 }
 
 const styles = StyleSheet.create({
-  bg: { flex: 1, width: '100%', transform: [{ scale: 1.03 }] },
-  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.32)' }
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#000",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 16,
+    color: "#000",
+    marginBottom: 12,
+    width: "100%",
+  },
+  button: {
+    backgroundColor: "#000",
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 12,
+    marginTop: 10,
+    width: "100%",
+  },
+  buttonText: { color: "#fff", fontWeight: "bold", textAlign: "center" },
 });
