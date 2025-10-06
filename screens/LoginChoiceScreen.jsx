@@ -9,9 +9,11 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import planoDataUri from "../assets/planodefundo";
 
+// Tela de escolha de tipo de login (Aluno ou Admin)
 export default function LoginChoiceScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // Hook para navegação entre telas
 
+  // Controle da imagem de fundo (fallback se o arquivo local falhar)
   let bgSource;
   try {
     bgSource = require("../assets/planodefundo.jpeg");
@@ -20,10 +22,13 @@ export default function LoginChoiceScreen() {
   }
 
   return (
+    // Fundo da tela com imagem personalizada
     <ImageBackground source={bgSource} style={{ flex: 1 }} resizeMode="cover">
       <View style={styles.container}>
+        {/* Título principal */}
         <Text style={styles.header}>Entrar como:</Text>
 
+        {/* Botão que leva à tela de login do aluno */}
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("LoginAluno")}
@@ -31,6 +36,7 @@ export default function LoginChoiceScreen() {
           <Text style={styles.buttonText}>Aluno</Text>
         </TouchableOpacity>
 
+        {/* Botão que leva à tela de login do administrador */}
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("LoginAdmin")}
@@ -42,11 +48,12 @@ export default function LoginChoiceScreen() {
   );
 }
 
+// Estilos da tela
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "center", // Centraliza verticalmente
+    alignItems: "center", // Centraliza horizontalmente
     padding: 20,
   },
   header: {

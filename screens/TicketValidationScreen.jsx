@@ -11,28 +11,33 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 
+// Tela de Validação de Tickets
 export default function TicketValidationScreen() {
-  const [ticketsHoje, setTicketsHoje] = useState([]);
-  const [activeTab, setActiveTab] = useState("pendentes");
+  const [ticketsHoje, setTicketsHoje] = useState([]); // Lista de tickets do dia
+  const [activeTab, setActiveTab] = useState("pendentes"); // Aba atual: pendentes ou validados
 
+  // Coordenadas do local permitido (ex: SENAI)
   const allowedCoords = {
     latitude: -27.61838134931327,
     longitude: -48.66277801339434,
   };
-  const allowedRadius = 100;
+  const allowedRadius = 100; // Raio máximo em metros
 
+  // Função para carregar os tickets armazenados localmente (AsyncStorage)
   const loadTickets = async () => {
     const today = new Date().toDateString();
     const stored = JSON.parse(await AsyncStorage.getItem("ticketsHoje")) || [];
-    setTicketsHoje(stored.filter((t) => t.date === today));
+    setTicketsHoje(stored.filter((t) => t.date === today)); // Filtra apenas os tickets do dia atual
   };
 
+  // Carrega tickets automaticamente ao abrir a tela
   useEffect(() => {
     loadTickets();
   }, []);
 
+  // Cálculo da distância entre coordenadas (Fórmula de Haversine)
   const getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3;
+    const R = 6371e3; // Raio da Terra em metros
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
@@ -43,10 +48,13 @@ export default function TicketValidationScreen() {
     return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   };
 
+  // Função principal: Validação de ticket com base na localização
   const validateTicket = async (ticket) => {
+    // Solicita permissão de localização ao usuário
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") return Alert.alert("Permissão Negada");
 
+    // Obtém localização atual
     const current = await Location.getCurrentPositionAsync({});
     const distance = getDistanceFromLatLonInM(
       current.coords.latitude,
@@ -54,25 +62,31 @@ export default function TicketValidationScreen() {
       allowedCoords.latitude,
       allowedCoords.longitude
     );
+
+    // Se o usuário estiver fora da área permitida, bloqueia a validação
     if (distance > allowedRadius)
       return Alert.alert("Erro", "Fora da Região Permitida");
 
+    // Marca o ticket como validado no AsyncStorage
     const allTickets =
       JSON.parse(await AsyncStorage.getItem("ticketsHoje")) || [];
     const updatedTickets = allTickets.map((t) =>
       t.aluno.matricula === ticket.aluno.matricula
-        ? { ...t, validatedAt: new Date().toLocaleTimeString() }
+        ? { ...t, validatedAt: new Date().toLocaleTimeString() } // Adiciona horário de validação
         : t
     );
 
+    // Salva lista atualizada e confirma ao usuário
     await AsyncStorage.setItem("ticketsHoje", JSON.stringify(updatedTickets));
     Alert.alert("Sucesso", `Ticket do aluno ${ticket.aluno.nome} validado!`);
-    loadTickets();
+    loadTickets(); // Atualiza a lista na tela
   };
 
+  // Separa os tickets em pendentes e validados
   const pendentes = ticketsHoje.filter((t) => !t.validatedAt);
   const validados = ticketsHoje.filter((t) => t.validatedAt);
 
+  // Renderiza cada item da lista de tickets
   const renderTicket = ({ item }) => (
     <View style={styles.card}>
       <Text style={styles.cardText}>Nome: {item.aluno.nome}</Text>
@@ -80,11 +94,14 @@ export default function TicketValidationScreen() {
       <Text style={styles.cardText}>
         Pedido às: {item.requestedAt || "--:--"}
       </Text>
+
       {item.validatedAt ? (
+        // Exibe horário se já estiver validado
         <Text style={[styles.cardText, { color: "green" }]}>
           Validado às {item.validatedAt}
         </Text>
       ) : (
+        // Caso contrário, mostra botão de validação
         <TouchableOpacity
           style={styles.button}
           onPress={() => validateTicket(item)}
@@ -95,6 +112,7 @@ export default function TicketValidationScreen() {
     </View>
   );
 
+  // Interface principal da tela
   return (
     <ImageBackground
       source={require("../assets/planodefundo.jpeg")}
@@ -104,6 +122,7 @@ export default function TicketValidationScreen() {
       <View style={styles.container}>
         <Text style={styles.header}>Validação de Tickets</Text>
 
+        {/* Abas de navegação: Pendentes / Validados */}
         <View style={styles.tabs}>
           <TouchableOpacity
             style={[
@@ -114,6 +133,7 @@ export default function TicketValidationScreen() {
           >
             <Text style={styles.tabText}>Pendentes</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={[
               styles.tabButton,
@@ -125,6 +145,7 @@ export default function TicketValidationScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Exibição condicional conforme a aba selecionada */}
         {activeTab === "pendentes" ? (
           pendentes.length === 0 ? (
             <Text style={styles.noTickets}>Nenhum Ticket Pendente</Text>
@@ -149,6 +170,7 @@ export default function TicketValidationScreen() {
   );
 }
 
+// Estilos visuais da tela
 const styles = StyleSheet.create({
   container: { flex: 1, marginTop: 110, paddingHorizontal: 20 },
   header: { fontSize: 28, fontWeight: "bold", color: "#000", marginBottom: 20 },

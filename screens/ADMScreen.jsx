@@ -12,28 +12,37 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import planoDataUri from "../assets/planodefundo";
 
+// Tela administrativa — permite cadastrar alunos, visualizar lista e gerenciar dados locais
 export default function ADMScreen() {
-  const [alunos, setAlunos] = useState([]);
-  const [nome, setNome] = useState("");
-  const [matricula, setMatricula] = useState("");
-  const [mostrarAlunos, setMostrarAlunos] = useState(false);
+  // Estados principais
+  const [alunos, setAlunos] = useState([]); // Lista de alunos cadastrados
+  const [nome, setNome] = useState(""); // Nome do aluno
+  const [matricula, setMatricula] = useState(""); // Matrícula do aluno
+  const [mostrarAlunos, setMostrarAlunos] = useState(false); // Controle de exibição da lista
 
+  // Gera um código de login único para o aluno (ex: "432@X")
   const gerarCodigoAluno = () => {
-    const numeros = Math.floor(Math.random() * 900 + 100);
-    const letras = String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+    const numeros = Math.floor(Math.random() * 900 + 100); // 3 dígitos aleatórios
+    const letras = String.fromCharCode(Math.floor(Math.random() * 26) + 65); // Letra maiúscula
     const simbolos = ["#", "@", "$", "&", "*"];
     const simbolo = simbolos[Math.floor(Math.random() * simbolos.length)];
     return `${numeros}${simbolo}${letras}`;
   };
 
+  // Cadastra aluno no AsyncStorage e exibe alerta de sucesso
   const cadastrarAluno = async () => {
     if (!nome || !matricula)
       return Alert.alert("Erro", "Preencha Todos os Campos");
+
+    // Evita duplicidade de matrícula
     if (alunos.some((a) => a.matricula === matricula))
       return Alert.alert("Erro", "Matrícula já Cadastrada");
 
+    // Cria objeto do novo aluno
     const codigo = gerarCodigoAluno();
     const novoAluno = { id: Date.now().toString(), nome, matricula, codigo };
+
+    // Atualiza lista e persiste no armazenamento
     const novosAlunos = [...alunos, novoAluno];
     setAlunos(novosAlunos);
     await AsyncStorage.setItem("alunos", JSON.stringify(novosAlunos));
@@ -42,21 +51,29 @@ export default function ADMScreen() {
       "Sucesso",
       `Aluno(a) ${nome} Cadastrado(a) com Código: ${codigo}`
     );
+
+    // Limpa campos após cadastro
     setNome("");
     setMatricula("");
   };
 
+  // Limpa completamente o AsyncStorage (usado apenas em testes)
   const limparAsyncStorage = async () => {
     await AsyncStorage.clear();
     setAlunos([]);
     Alert.alert("Sucesso", "AsyncStorage Limpo");
   };
+
+  // Reseta os tickets do dia (para reiniciar validações diárias)
   const resetTickets = async () => {
     await AsyncStorage.setItem("ticketsHoje", JSON.stringify([]));
     Alert.alert("Sucesso", "Tickets Resetados.");
   };
+
+  // Alterna entre mostrar/ocultar lista de alunos
   const toggleListaAlunos = () => setMostrarAlunos(!mostrarAlunos);
 
+  // Carrega alunos armazenados ao abrir a tela
   useEffect(() => {
     (async () => {
       const stored = JSON.parse(await AsyncStorage.getItem("alunos")) || [];
@@ -64,6 +81,7 @@ export default function ADMScreen() {
     })();
   }, []);
 
+  // Tratamento de imagem de fundo (fallback para base64 se não houver arquivo físico)
   let bgSource;
   try {
     bgSource = require("../assets/planodefundo.jpeg");
@@ -76,6 +94,7 @@ export default function ADMScreen() {
       <View style={[styles.container, { marginTop: 80 }]}>
         <Text style={styles.header}>Cadastro de Alunos</Text>
 
+        {/* Campos de entrada de dados */}
         <TextInput
           placeholder="Nome"
           value={nome}
@@ -89,16 +108,19 @@ export default function ADMScreen() {
           style={styles.input}
         />
 
+        {/* Botão de cadastro */}
         <TouchableOpacity style={styles.button} onPress={cadastrarAluno}>
           <Text style={styles.buttonText}>Cadastrar Aluno</Text>
         </TouchableOpacity>
 
+        {/* Botão para exibir ou ocultar lista */}
         <TouchableOpacity style={styles.button} onPress={toggleListaAlunos}>
           <Text style={styles.buttonText}>
             {mostrarAlunos ? "Ocultar Alunos" : "Listar Alunos"}
           </Text>
         </TouchableOpacity>
 
+        {/* Lista de alunos cadastrados */}
         {mostrarAlunos && (
           <FlatList
             data={alunos}
@@ -117,6 +139,7 @@ export default function ADMScreen() {
           />
         )}
 
+        {/* Botões administrativos extras */}
         <TouchableOpacity style={styles.button} onPress={limparAsyncStorage}>
           <Text style={styles.buttonText}>Limpar AsyncStorage </Text>
         </TouchableOpacity>
@@ -129,6 +152,7 @@ export default function ADMScreen() {
   );
 }
 
+// Estilos da tela
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   header: {
